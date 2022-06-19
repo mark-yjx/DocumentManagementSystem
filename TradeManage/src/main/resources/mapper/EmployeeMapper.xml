@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trade.mapper.EmployeeMapper">
+	<!-- Result Map -->
+	<resultMap id="baseResultMap" type="com.trade.model.Employee">
+        <result column="employeeid" property="employeeid"/>
+        <result column="employeename" property="employeename"/>
+        <result column="employeepass" property="employeepass"/>
+        <result column="email" property="email"/>
+        <result column="employeerole" property="employeerole"/>
+	</resultMap>
+
+
+	<!-- table name -->
+	<sql id="table_name">
+		t_employee
+	</sql>
+	<!-- property table all fields -->
+    <sql id="base_column_list">
+			employeeid,
+			employeename,
+			employeepass,
+			email,
+			employeerole
+    </sql>
+    <sql id="update_clause">
+        <trim suffixOverrides=",">
+            <if test="employeeid != null and employeeid !=''">
+                employeeid=#{employeeid},
+            </if>
+            <if test="employeename != null and employeename !=''">
+                employeename=#{employeename},
+            </if>
+            <if test="employeepass != null and employeepass !=''">
+                employeepass=#{employeepass},
+            </if>
+            <if test="email != null and email !=''">
+                email=#{email},
+            </if>
+            <if test="employeerole != null">
+                employeerole=#{employeerole},
+            </if>
+        </trim>
+    </sql>
+    <sql id="query_where_clause">
+        where 1=1
+        <trim suffixOverrides=",">
+            <if test="employeeid != null and employeeid !=''">
+                and employeeid=#{employeeid}
+            </if>
+            <if test="employeename != null and employeename !=''">
+                and employeename like concat(concat("%",#{employeename}),"%")
+            </if>
+            <if test="employeepass != null and employeepass !=''">
+                and employeepass=#{employeepass}
+            </if>
+            <if test="email != null and email !=''">
+                and email=#{email}
+            </if>
+            <if test="employeerole != null">
+                and employeerole=#{employeerole}
+            </if>
+        </trim>
+    </sql>
+    <insert id="save" parameterType="Object" >
+        insert into 
+        <include refid="table_name" />
+        (
+			employeeid,
+			employeename,
+			employeepass,
+			email,
+			employeerole
+        )
+        values
+        (
+			#{employeeid},
+			#{employeename},
+			#{employeepass},
+			#{email},
+			#{employeerole}
+        )
+    </insert>
+
+    <select id="queryById" resultMap="baseResultMap" parameterType="Object">
+        select
+        <include refid="base_column_list" />
+        from <include refid="table_name" /> where employeeid = #{employeeid}
+    </select>
+
+    <select id="queryByCount" resultType="java.lang.Integer" parameterType="Object">
+        select count(1) from 
+        <include refid="table_name" />
+        <include refid="query_where_clause" />
+    </select>
+
+    <select id="queryByList" resultMap="baseResultMap"	parameterType="Object">
+        select
+        <include refid="base_column_list"/>
+        from 
+        <include refid="table_name" />
+        <include refid="query_where_clause"/>
+        order by employeeid desc
+		${pageQueryCondition}
+    </select>
+	
+    <select id="queryByEmployee" resultMap="baseResultMap"	parameterType="Object">
+        select
+        <include refid="base_column_list"/>
+        from 
+        <include refid="table_name" />
+        <include refid="query_where_clause"/>
+        order by employeeid desc
+    </select>
+
+    <update id="update" parameterType="Object" >
+        update <include refid="table_name" /> set <include refid="update_clause" /> where employeeid = #{employeeid}
+    </update>
+
+    <update id="updateResult" parameterType="Object" >
+        update <include refid="table_name" /> set <include refid="update_clause" /> where employeeid = #{employeeid}
+    </update>
+
+	<delete id="deleteById" parameterType="Object">
+		delete from <include refid="table_name" /> where employeeid = #{employeeid}
+	</delete>
+
+</mapper>   

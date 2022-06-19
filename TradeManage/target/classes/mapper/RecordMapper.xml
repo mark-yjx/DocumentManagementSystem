@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trade.mapper.RecordMapper">
+	<!-- Result Map -->
+	<resultMap id="baseResultMap" type="com.trade.model.Record">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+	</resultMap>
+
+	<!-- table name -->
+	<sql id="table_name">
+		t_record
+	</sql>
+	<!-- property table all fields -->
+	<sql id="base_column_list">
+		id,
+		name,
+		record,
+		createtime
+	</sql>
+
+	<sql id="query_where_clause">
+		where 1=1
+		<trim suffixOverrides=",">
+			<if test="id != null and id !=''">
+				and id=#{id}
+			</if>
+			<if test="name != null and name !=''">
+				and name like concat(concat("%",#{name}),"%")
+			</if>
+		</trim>
+	</sql>
+	<insert id="save" parameterType="Object">
+		insert into
+		<include refid="table_name" />
+		(
+		name, record, createtime
+		)
+		values
+		(
+		#{name}, #{record}, #{createtime}
+		)
+	</insert>
+
+	<select id="queryByCount" resultType="java.lang.Integer"
+		parameterType="Object">
+		select count(1) from
+		<include refid="table_name" />
+		<include refid="query_where_clause" />
+	</select>
+
+	<select id="queryByList" resultMap="baseResultMap"
+		parameterType="Object">
+		select
+		<include refid="base_column_list" />
+		from
+		<include refid="table_name" />
+		<include refid="query_where_clause" />
+		${pageQueryCondition}
+	</select>
+
+	<select id="queryByLog" resultMap="baseResultMap"	parameterType="Object">
+		select
+		<include refid="base_column_list"/>
+		from
+		<include refid="table_name" />
+		<include refid="query_where_clause"/>
+	</select>
+
+    <update id="update" parameterType="Object" >
+        update <include refid="table_name" /> set name = #{name} where id = #{id}
+    </update>
+
+	<delete id="deleteById" parameterType="Object">
+		delete from
+		<include refid="table_name" />
+		where id = #{id}
+	</delete>
+
+	 <select id="queryById" resultMap="baseResultMap" parameterType="Object">
+        select
+        <include refid="base_column_list" />
+        from <include refid="table_name" /> where id = #{id}
+    </select>
+</mapper>
